@@ -21,33 +21,16 @@ public class DBConnection {
 	public Connection getConnected() throws SQLException{
 		return DriverManager.getConnection("jdbc:mysql://localhost:3306/booklist", "root", "***");
 	}
-	/*
-	public ArrayList<User> getUser() throws SQLException{
-		ArrayList<User> user = new ArrayList<>();
-		Statement st = getConnected().createStatement();
-		ResultSet rs = st.executeQuery("SELECT * FROM user");
-		
-		while (rs.next()) {
-			User us = new User();
-			us.setUserId(rs.getInt(1));
-			us.setName(rs.getString(2));
-			us.setSurname(rs.getString(3));
-			us.setAge(rs.getInt(4));
-			user.add(us);
-		}
-		return user;
-	}*/
+	
 	
 	public ArrayList<User> getUser() throws SQLException {
 	    ArrayList<User> userList = new ArrayList<>();
-	    // try-with-resources kullanarak bağlantıyı ve statement'ı otomatik kapatın. Bu çok önemli!
 	    try (Connection conn = getConnected();
 	         Statement st = conn.createStatement();
 	         ResultSet rs = st.executeQuery("SELECT * FROM user")) {
 
 	        while (rs.next()) {
 	            User us = new User();
-	            // Sütun isimlerini kullanmak daha güvenilirdir.
 	            us.setUserId(rs.getInt("userId"));
 	            us.setName(rs.getString("name"));
 	            us.setSurname(rs.getString("surname"));
@@ -92,7 +75,7 @@ public class DBConnection {
 	    ps.setString(2, user.getSurname());
 	    ps.setInt(3, user.getAge());
 	    ps.setString(4, user.getUsername());
-	    ps.setString(5, user.getPassword()); // Güvenlik için hash'lemeni öneririm
+	    ps.setString(5, user.getPassword());
 	    ps.executeUpdate();
 	}
 	
@@ -274,7 +257,6 @@ public class DBConnection {
 	                bk.setPublication(rs.getInt("publication"));
 
 	                Author author = new Author();
-	                // DÜZELTME: 'authId' yerine 'authorId' kullanıldı.
 	                author.setAuthId(rs.getInt("authorId"));
 	                author.setAutName(rs.getString("autName"));
 	                author.setAutSurname(rs.getString("autSurname"));
@@ -288,11 +270,10 @@ public class DBConnection {
 	    return bookList;
 	}
 
-	// DBConnection.java içinde bu metodu da bulun ve değiştirin.
 	public ArrayList<Book> getAllBooksWithAuthor() throws SQLException {
 	    ArrayList<Book> bookList = new ArrayList<>();
 	   
-	    String query = "SELECT b.*, a.* FROM book b JOIN author a ON b.authorId = a.authorId"; // <-- DÜZELTİLDİ
+	    String query = "SELECT b.*, a.* FROM book b JOIN author a ON b.authorId = a.authorId"; 
 	    
 	    try (Connection conn = getConnected();
 	         Statement st = conn.createStatement();
@@ -305,7 +286,6 @@ public class DBConnection {
 	            bk.setPublication(rs.getInt("publication"));
 
 	            Author author = new Author();
-	            // DÜZELTME: 'authId' yerine 'authorId' kullanıldı.
 	            author.setAuthId(rs.getInt("authorId"));
 	            author.setAutName(rs.getString("autName"));
 	            author.setAutSurname(rs.getString("autSurname"));
@@ -316,7 +296,6 @@ public class DBConnection {
 	    return bookList;
 	}
 
-	// YENİ METOT: Kullanıcının kitap durumunu günceller.
 	public void updateBookStatusForUser(int userId, int bookId, String newStatus) throws SQLException {
 	    String query = "UPDATE user_books SET status = ? WHERE user_id = ? AND book_id = ?";
 	    try (Connection conn = getConnected(); PreparedStatement ps = conn.prepareStatement(query)) {
@@ -327,6 +306,5 @@ public class DBConnection {
 	    }
 	}
 
-	// linkUserBook metodunu değiştirmeye gerek yok, çünkü veritabanı varsayılan olarak 'Okunacak' atayacak.
 
 }
