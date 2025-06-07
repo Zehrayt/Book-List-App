@@ -19,7 +19,7 @@ public class DBConnection {
 	}
 	
 	public Connection getConnected() throws SQLException{
-		return DriverManager.getConnection("jdbc:mysql://localhost:3306/booklist", "root", "01051189Zehr.");
+		return DriverManager.getConnection("jdbc:mysql://localhost:3306/booklist", "root", "***");
 	}
 	/*
 	public ArrayList<User> getUser() throws SQLException{
@@ -52,25 +52,25 @@ public class DBConnection {
 	            us.setName(rs.getString("name"));
 	            us.setSurname(rs.getString("surname"));
 	            us.setAge(rs.getInt("age"));
-	            us.setUsername(rs.getString("username")); // EKLENDİ
-	            us.setPassword(rs.getString("password")); // EKLENDİ
+	            us.setUsername(rs.getString("username")); 
+	            us.setPassword(rs.getString("password"));
 	            userList.add(us);
 	        }
-	    } // conn, st, rs burada otomatik olarak kapanır.
+	    } 
 	    return userList;
 	}
 	
 	public User getUserByUsernameAndPassword(String username, String password) throws SQLException {
 	    String query = "SELECT * FROM user WHERE username = ? AND password = ?";
-	    // Yine try-with-resources kullanıyoruz.
+	   
 	    try (Connection conn = getConnected();
 	         PreparedStatement ps = conn.prepareStatement(query)) {
 	        
 	        ps.setString(1, username);
-	        ps.setString(2, password); // Gerçek uygulamada şifre hash'lenerek karşılaştırılmalı.
+	        ps.setString(2, password); 
 	        
 	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) { // Eğer bir sonuç bulunduysa
+	            if (rs.next()) { 
 	                User user = new User();
 	                user.setUserId(rs.getInt("userId"));
 	                user.setName(rs.getString("name"));
@@ -78,11 +78,11 @@ public class DBConnection {
 	                user.setAge(rs.getInt("age"));
 	                user.setUsername(rs.getString("username"));
 	                user.setPassword(rs.getString("password"));
-	                return user; // Bulunan kullanıcı nesnesini döndür
+	                return user; 
 	            }
 	        }
 	    }
-	    return null; // Kullanıcı bulunamadıysa null döndür
+	    return null; 
 	}
 	
 	public void saveUser(User user) throws SQLException {
@@ -244,52 +244,6 @@ public class DBConnection {
 	    return bookList;
 	}
 	
-	// BU İKİ METODU DBConnection.java DOSYANIZA EKLEYİN
-
-	/**
-	 * Belirli bir kullanıcının kitap listesini, yazar bilgileriyle birlikte getirir.
-	 * Hatanın oluştuğu satır bu metodu çağırmaya çalışıyor.
-	 */
-	/*public ArrayList<Book> getBooksForUser(int userId) throws SQLException {
-	    ArrayList<Book> bookList = new ArrayList<>();
-	    // 3 tabloyu birleştiren (join) sorgu
-	    String query = "SELECT b.bookId, b.bookName, b.bookGenre, b.publication, " +
-	                   "a.authId, a.authName, a.authSurname, a.autAge " +
-	                   "FROM book b " +
-	                   "INNER JOIN author a ON b.authorId = a.authId " +
-	                   "INNER JOIN user_books ub ON b.bookId = ub.book_id " +
-	                   "WHERE ub.user_id = ?";
-
-	    try (Connection conn = getConnected();
-	         PreparedStatement ps = conn.prepareStatement(query)) {
-
-	        ps.setInt(1, userId);
-	        try (ResultSet rs = ps.executeQuery()) {
-	            while (rs.next()) {
-	                Book bk = new Book();
-	                bk.setBookId(rs.getInt("bookId"));
-	                bk.setBookName(rs.getString("bookName"));
-	                bk.setBookGenre(rs.getString("bookGenre"));
-	                bk.setPublication(rs.getInt("publication"));
-
-	                Author author = new Author();
-	                author.setAuthId(rs.getInt("authId"));
-	                author.setAutName(rs.getString("authName"));
-	                author.setAutSurname(rs.getString("authSurname"));
-	                author.setAutAge(rs.getInt("autAge"));
-
-	                bk.setAuthor(author); // Kitap nesnesine yazar nesnesini ekliyoruz
-	                bookList.add(bk);
-	            }
-	        }
-	    }
-	    return bookList;
-	}*/
-
-	/**
-	 * Bir kitabın kullanıcıyla olan bağlantısını user_books tablosundan siler.
-	 * "Kitap Sil" butonuna bastığınızda bu metot kullanılacak. Şimdiden ekleyelim.
-	 */
 	public void unlinkUserBook(int userId, int bookId) throws SQLException {
 	    String query = "DELETE FROM user_books WHERE user_id = ? AND book_id = ?";
 	    try (Connection conn = getConnected();
@@ -300,13 +254,12 @@ public class DBConnection {
 	    }
 	}
 	
-	// DBConnection.java içinde bu metodu bulun ve değiştirin.
+	
 	public ArrayList<Book> getBooksForUser(int userId) throws SQLException {
 	    ArrayList<Book> bookList = new ArrayList<>();
-	    // DÜZELTME: 'a.authId' yerine 'a.authorId' kullanıldı.
 	    String query = "SELECT b.*, a.*, ub.status " +
 	                   "FROM book b " +
-	                   "JOIN author a ON b.authorId = a.authorId " + // <-- DÜZELTİLDİ
+	                   "JOIN author a ON b.authorId = a.authorId " + 
 	                   "JOIN user_books ub ON b.bookId = ub.book_id " +
 	                   "WHERE ub.user_id = ?";
 
@@ -338,7 +291,7 @@ public class DBConnection {
 	// DBConnection.java içinde bu metodu da bulun ve değiştirin.
 	public ArrayList<Book> getAllBooksWithAuthor() throws SQLException {
 	    ArrayList<Book> bookList = new ArrayList<>();
-	    // DÜZELTME: 'a.authId' yerine 'a.authorId' kullanıldı.
+	   
 	    String query = "SELECT b.*, a.* FROM book b JOIN author a ON b.authorId = a.authorId"; // <-- DÜZELTİLDİ
 	    
 	    try (Connection conn = getConnected();
